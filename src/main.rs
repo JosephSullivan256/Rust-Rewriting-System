@@ -6,6 +6,8 @@ mod property;
 #[macro_use] extern crate lazy_static;
 extern crate regex;
 
+use std::env;
+
 use parser::Parser;
 use parser::ASTNode;
 use property::Property;
@@ -38,11 +40,24 @@ fn propositional_logic(){
         Property::new(parser.parse("=(bi(x,y),and(imp(x,y),imp(y,x)))")).unwrap(), // Bi-implication
     ];
 
-    let expression = parser.parse("not(and(not(z),not(w)))");
-    
-    println!("Expression: {}",expression);
-    display_node_vec(rules[14].apply_thorough(&expression));
-    display_node_vec(rules[6].apply_thorough(&rules[14].apply_thorough(&expression)[0]));
+    let args: Vec<String> = env::args().collect();
+
+    match args.len() {
+        1 => eprintln!("{}: missing parameters. Try -h.", {&args[0]}),
+        2 => if args[1]=="-h" {
+                println!("Use: [OPTION] \"<formula>\" <rule>");
+                println!("Rules:");
+                rules.iter().enumerate().for_each(
+                    |(i,x)| println!("{}: =({},{})", i, x.get_left(), x.get_right())
+                )
+            },
+        _ => {
+            let expression = parser.parse(&args[1]);
+            println!("Inputted Formula: {}",expression);
+            println!("Outputted Formulas: ");
+            display_node_vec(rules[args[2].parse::<usize>().unwrap()].apply_thorough(&expression));
+        }
+    }
 }
 
 fn natural_numbers(){ //equivalent to peano axioms

@@ -9,6 +9,14 @@ pub struct Property {
 }
 
 impl Property {
+    pub fn get_left(&self) -> &ASTNode {
+        &self.left
+    }
+
+    pub fn get_right(&self) -> &ASTNode {
+        &self.right
+    }
+
     pub fn new(equivalence: ASTNode) -> Result<Property,&'static str>{
         if let ASTNode::Function(func,nodes) = equivalence {
             if func == "=" && nodes.len() == 2 {
